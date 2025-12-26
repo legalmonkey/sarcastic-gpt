@@ -1,11 +1,18 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
 import sys
 import time
 
 from inference import generate
-from schemas import Prompt  # assuming this is where Prompt lives
 
 app = FastAPI()
+
+# --------------------
+# Request schema
+# --------------------
+class Prompt(BaseModel):
+    prompt: str
+
 
 # --------------------
 # Cold-start readiness flag
@@ -32,7 +39,7 @@ def warmup_model():
 
 
 # --------------------
-# Optional health endpoint (recommended)
+# Health endpoint
 # --------------------
 @app.get("/health")
 def health():
@@ -42,20 +49,18 @@ def health():
 
 
 # --------------------
-# Generate endpoint (modified)
+# Generate endpoint
 # --------------------
 @app.post("/generate")
 def generate_text(req: Prompt):
     print("REQUEST RECEIVED", flush=True)
     sys.stdout.flush()
 
-    # ---- Cold start guard ----
     if not MODEL_READY:
         return {
             "response": "Model is waking up. Please retry in a few seconds."
         }
 
-    # ---- Empty prompt guard ----
     if not req.prompt.strip():
         return {
             "response": "Please enter a prompt."
