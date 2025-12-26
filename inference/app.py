@@ -1,3 +1,6 @@
+import sys
+import time
+
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
@@ -23,6 +26,9 @@ class Prompt(BaseModel):
 
 @app.post("/generate")
 def generate_text(req: Prompt):
+    print("REQUEST RECEIVED", flush=True)
+    sys.stdout.flush()
+
     if not req.prompt.strip():
         return {"response": "Try asking something first."}
 
@@ -32,4 +38,14 @@ def generate_text(req: Prompt):
         "### Response:\n"
     )
 
-    return {"response": generate(full_prompt)}
+    print("STARTING GENERATION", flush=True)
+    sys.stdout.flush()
+
+    start = time.time()
+    response = generate(full_prompt)
+    end = time.time()
+
+    print(f"GENERATION FINISHED in {end - start:.2f}s", flush=True)
+    sys.stdout.flush()
+
+    return {"response": response}

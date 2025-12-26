@@ -5,10 +5,10 @@ from model_loader import model, encode, decode, DEVICE, block_size
 @torch.no_grad()
 def generate(
     prompt: str,
-    max_new_tokens=120,
-    temperature=0.7,
+    max_new_tokens=40,
+    temperature=0.8,
     top_k=40,
-    frequency_penalty=0.8,
+    frequency_penalty=0.9,
     presence_penalty=0.6,
 ):
     if not prompt.startswith(" "):

@@ -1,5 +1,7 @@
 import torch
 import sentencepiece as spm
+torch.set_num_threads(1)
+torch.set_num_interop_threads(1)
 from model_def import GPTLanguageModel, block_size
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
