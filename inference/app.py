@@ -1,36 +1,65 @@
+from fastapi import FastAPI
 import sys
 import time
 
-from fastapi import FastAPI
-from pydantic import BaseModel
-from fastapi.middleware.cors import CORSMiddleware
 from inference import generate
+from schemas import Prompt  # assuming this is where Prompt lives
 
-app = FastAPI(title="Sarcastic LLM API")
+app = FastAPI()
 
-# ---------- CORS ----------
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-# --------------------------
+# --------------------
+# Cold-start readiness flag
+# --------------------
+MODEL_READY = False
 
-class Prompt(BaseModel):
-    prompt: str
 
+# --------------------
+# Startup warmup
+# --------------------
+@app.on_event("startup")
+def warmup_model():
+    global MODEL_READY
+    try:
+        print("WARMUP STARTED", flush=True)
+        generate(
+            "### Instruction:\nHello\n\n### Response:\n",
+            max_new_tokens=5
+        )
+        MODEL_READY = True
+        print("WARMUP COMPLETE", flush=True)
+    except Exception as e:
+        print("WARMUP FAILED:", e, flush=True)
+
+
+# --------------------
+# Optional health endpoint (recommended)
+# --------------------
+@app.get("/health")
+def health():
+    return {
+        "status": "ready" if MODEL_READY else "warming"
+    }
+
+
+# --------------------
+# Generate endpoint (modified)
+# --------------------
 @app.post("/generate")
 def generate_text(req: Prompt):
     print("REQUEST RECEIVED", flush=True)
     sys.stdout.flush()
 
+    # ---- Cold start guard ----
+    if not MODEL_READY:
+        return {
+            "response": "Model is waking up. Please retry in a few seconds."
+        }
+
+    # ---- Empty prompt guard ----
     if not req.prompt.strip():
-        return {"response": "Try asking something first."}
+        return {
+            "response": "Please enter a prompt."
+        }
 
     full_prompt = (
         "### Instruction:\n"

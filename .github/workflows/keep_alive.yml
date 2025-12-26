@@ -1,0 +1,15 @@
+name: Keep Render Backend Warm
+
+on:
+  schedule:
+    # Every 10 minutes
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend health endpoint
+        run: |
+          curl -fsS https://sarcastic-gpt.onrender.com/health || true

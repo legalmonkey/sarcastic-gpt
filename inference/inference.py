@@ -55,5 +55,7 @@ def generate(
     if response_marker in text:
         # Take text AFTER the LAST response marker
         text = text.split(response_marker)[-1]
+    if "###" in text:
+        text = text.split("###", 1)[0]
 
     return text.strip()
