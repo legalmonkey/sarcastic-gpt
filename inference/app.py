@@ -6,6 +6,15 @@ import time
 from inference import generate
 
 app = FastAPI()
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # safe for demo
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # --------------------
 # Request schema
