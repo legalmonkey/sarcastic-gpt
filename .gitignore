@@ -1,0 +1,53 @@
+# ======================
+# Python cache
+# ======================
+__pycache__/
+*.py[cod]
+*.log
+
+# ======================
+# Virtual environments (ALL)
+# ======================
+venv/
+cuda/
+.env
+.env.local
+.env.*.local
+
+# ======================
+# PyTorch / training artifacts
+# ======================
+*.pt.old
+*.ckpt.old
+*.pth.old
+
+# ======================
+# Training-only data (do NOT commit)
+# ======================
+train/wiki_clean.txt
+train/wiki_tokens.pt
+train/sarcasm_train_*.txt
+train/sarcasm_val_*.txt
+train/.ipynb_checkpoints  
+data/train-00000-of-00001.parquet
+train/wizard_of_oz.txt
+
+# ======================
+# Node / Next.js
+# ======================
+node_modules/
+.next/
+out/
+
+# ======================
+# OS junk
+# ======================
+.DS_Store
+Thumbs.db
+
+# ======================
+# Editors
+# ======================
+.vscode/
+.idea/
+ 
